@@ -1,7 +1,7 @@
 # How Can a .NET Developer Use Claude Skills to Implement a Production-Ready PDF Workflow with IronPDF?
 
 [![.NET 10](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/)
-[![IronPDF](https://img.shields.io/badge/IronPDF-2026.2.2-green.svg)](https://ironpdf.com/)
+[![IronPDF](https://img.shields.io/badge/IronPDF-2026.9.2-green.svg)](https://ironpdf.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Overview
@@ -209,6 +209,16 @@ Tests verify:
 - HTML encoding and template rendering integrity.
 - IronPDF generating valid `%PDF-` byte output for both single and 50+ item multi-page orders.
 - Controller HTTP responses (200 OK, 404 Not Found, 400 Bad Request).
+
+---
+
+## Contributors
+
+This project is created and maintained by **Kanaiya Katarmal** in collaboration with **Iron Software**.
+
+Special thanks to **Iron Software** for supporting this project and providing IronPDF and the official IronPDF Skill used in the development workflow.
+
+See [CONTRIBUTORS.md](CONTRIBUTORS.md) for contributor details.
 
 ---
 
