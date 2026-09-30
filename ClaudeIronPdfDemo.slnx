@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/OrderPdf.Api/OrderPdf.Api.csproj" />
+    <Project Path="src/OrderPdf.Application/OrderPdf.Application.csproj" />
+    <Project Path="src/OrderPdf.Domain/OrderPdf.Domain.csproj" />
+    <Project Path="src/OrderPdf.Infrastructure/OrderPdf.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/OrderPdf.Tests/OrderPdf.Tests.csproj" />
+  </Folder>
+</Solution>

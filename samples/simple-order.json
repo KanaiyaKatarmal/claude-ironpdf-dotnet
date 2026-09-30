@@ -1,0 +1,83 @@
+{
+  "id": "ord-simple-001",
+  "orderNumber": "ORD-2026-00125",
+  "orderDate": "2026-09-20T10:30:00+00:00",
+  "status": "Confirmed",
+  "currency": "USD",
+  "paymentMethod": "Corporate Visa (ending 8821)",
+  "customerNotes": "Please deliver during business hours (9 AM - 5 PM).",
+  "company": {
+    "id": "COMP-001",
+    "name": "Acme Commerce Solutions Inc.",
+    "tagline": "Next-Generation Enterprise Cloud & Logistics",
+    "email": "orders@acmecommerce.com",
+    "phone": "+1 (800) 555-0199",
+    "website": "https://acmecommerce.com",
+    "taxId": "US-TAX-84920194",
+    "address": {
+      "street": "100 Technology Plaza",
+      "suiteOrApt": "Suite 500",
+      "city": "Seattle",
+      "state": "WA",
+      "postalCode": "98101",
+      "country": "United States"
+    }
+  },
+  "customer": {
+    "id": "CUST-101",
+    "name": "Sarah Jenkins",
+    "companyName": "Contoso Technologies LLC",
+    "email": "s.jenkins@contoso.com",
+    "phone": "+1 (415) 555-0142",
+    "billingAddress": {
+      "street": "500 Howard Street",
+      "suiteOrApt": "Floor 12",
+      "city": "San Francisco",
+      "state": "CA",
+      "postalCode": "94105",
+      "country": "United States"
+    },
+    "shippingAddress": {
+      "street": "500 Howard Street",
+      "suiteOrApt": "Receiving Dock B",
+      "city": "San Francisco",
+      "state": "CA",
+      "postalCode": "94105",
+      "country": "United States"
+    }
+  },
+  "shippingFee": 25.00,
+  "additionalOrderDiscount": 0.00,
+  "items": [
+    {
+      "id": "item-001",
+      "sku": "PRD-SRV-001",
+      "productName": "Enterprise Cloud Server Pro",
+      "description": "64-Core AMD EPYC, 256GB ECC RAM, 4TB NVMe SSD",
+      "quantity": 2,
+      "unitPrice": 1850.00,
+      "discount": 0.00,
+      "taxRate": 8.5
+    },
+    {
+      "id": "item-002",
+      "sku": "PRD-NET-012",
+      "productName": "Managed 10GbE Switch 24-Port",
+      "description": "L3 Managed Rackmount Switch with PoE+ support",
+      "quantity": 1,
+      "unitPrice": 650.00,
+      "discount": 0.00,
+      "taxRate": 8.5
+    },
+    {
+      "id": "item-003",
+      "sku": "PRD-ACC-045",
+      "productName": "Cat6A Shielded Patch Cable 10-Pack",
+      "description": "10ft High Performance 10Gbps Ethernet Cables",
+      "quantity": 4,
+      "unitPrice": 45.00,
+      "discount": 0.00,
+      "taxRate": 8.5
+    }
+  ]
+}

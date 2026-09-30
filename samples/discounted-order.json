@@ -1,0 +1,93 @@
+{
+  "id": "ord-discount-002",
+  "orderNumber": "ORD-2026-00126",
+  "orderDate": "2026-09-21T14:15:00+00:00",
+  "status": "Processing",
+  "currency": "USD",
+  "paymentMethod": "Direct ACH Wire Transfer",
+  "customerNotes": "Quarterly volume discount applied per Master Services Agreement MSA-2026-99.",
+  "company": {
+    "id": "COMP-001",
+    "name": "Acme Commerce Solutions Inc.",
+    "tagline": "Next-Generation Enterprise Cloud & Logistics",
+    "email": "orders@acmecommerce.com",
+    "phone": "+1 (800) 555-0199",
+    "website": "https://acmecommerce.com",
+    "taxId": "US-TAX-84920194",
+    "address": {
+      "street": "100 Technology Plaza",
+      "suiteOrApt": "Suite 500",
+      "city": "Seattle",
+      "state": "WA",
+      "postalCode": "98101",
+      "country": "United States"
+    }
+  },
+  "customer": {
+    "id": "CUST-202",
+    "name": "David Rodriguez",
+    "companyName": "Fabrikam Global Logistics",
+    "email": "d.rodriguez@fabrikam.com",
+    "phone": "+1 (312) 555-0188",
+    "billingAddress": {
+      "street": "233 S Wacker Dr",
+      "suiteOrApt": "Suite 3400",
+      "city": "Chicago",
+      "state": "IL",
+      "postalCode": "60606",
+      "country": "United States"
+    },
+    "shippingAddress": {
+      "street": "1400 E Higgins Rd",
+      "suiteOrApt": "Warehouse Bay 4",
+      "city": "Des Plaines",
+      "state": "IL",
+      "postalCode": "60018",
+      "country": "United States"
+    }
+  },
+  "shippingFee": 150.00,
+  "additionalOrderDiscount": 200.00,
+  "items": [
+    {
+      "id": "item-101",
+      "sku": "DEV-WRK-100",
+      "productName": "Developer Workstation X9",
+      "description": "Liquid Cooled, 32-Core CPU, 128GB RAM, RTX 4090",
+      "quantity": 4,
+      "unitPrice": 3200.00,
+      "discount": 400.00,
+      "taxRate": 7.0
+    },
+    {
+      "id": "item-102",
+      "sku": "MON-4K-027",
+      "productName": "UltraSharp 32\" 4K HDR Monitor",
+      "description": "IPS Black Panel, 99% DCI-P3, USB-C 90W Hub",
+      "quantity": 8,
+      "unitPrice": 720.00,
+      "discount": 160.00,
+      "taxRate": 7.0
+    },
+    {
+      "id": "item-103",
+      "sku": "ACC-DSK-009",
+      "productName": "Thunderbolt 4 Docking Station",
+      "description": "Dual 4K Display, Gigabit Ethernet, 100W Power Delivery",
+      "quantity": 4,
+      "unitPrice": 240.00,
+      "discount": 40.00,
+      "taxRate": 7.0
+    },
+    {
+      "id": "item-104",
+      "sku": "LIC-SFT-ENT",
+      "productName": "Enterprise IDE Annual License",
+      "description": "Per-seat enterprise subscription with AI features",
+      "quantity": 10,
+      "unitPrice": 450.00,
+      "discount": 500.00,
+      "taxRate": 0.0
+    }
+  ]
+}
