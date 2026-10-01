@@ -69,6 +69,9 @@ IronPDF supports dynamic tokens inside `HtmlHeaderFooter` fragments:
 - `{total-pages}`: Total document page count
 - `{date}`: Current rendering date
 - `{time}`: Current rendering time
+- `{url}`: Source URL of the rendered page
+- `{html-title}`: Title of the source HTML document
+- `{pdf-title}`: Title set on the PDF document
 
 ### Code Configuration in `OrderPdfService.cs`:
 
@@ -102,5 +105,40 @@ All user and business data interpolated into the HTML template is passed through
 
 ### 4.3 High-Volume Performance
 For applications generating thousands of PDFs per hour:
-1. Warm up the Chromium process at startup.
-2. Consider offloading heavy batch generation to a background worker / message queue (e.g. RabbitMQ, Azure Service Bus) rather than blocking synchronous HTTP request threads.
+
+1. **Warm up Chromium at startup.** `Program.cs` calls
+   `IronPdf.Installation.Initialize()` after the license key is applied. The first
+   render in a cold process initialises Chromium and can take tens of seconds; this
+   pays that cost at boot instead of on a user's first request.
+2. **Know what "reuse the renderer" does and does not mean here.** Reusing a
+   `ChromePdfRenderer` is sound advice where `RenderingOptions` is invariant. This
+   project writes the order number into the page header, so the renderer is built per
+   request by design — a shared instance would race across concurrent requests and
+   print one customer's details onto another customer's PDF. If profiling ever shows
+   construction to be material, pool the renderers and rent one exclusively per
+   render; do not promote the existing instance to a singleton.
+3. **Offload bulk generation.** Push batch work to a background worker or message
+   queue (RabbitMQ, Azure Service Bus) rather than holding an HTTP request thread
+   open for the duration of a render.
+4. **Dispose documents.** `PdfDocument` is `IDisposable` and holds unmanaged
+   resources. In a long-running process this is not optional.
+
+### 4.4 Fonts
+
+Chromium renders with the fonts installed on the host. A container with no font
+packages produces blank boxes where text should be, with no error and no warning —
+one of the most common IronPDF support tickets. Install `fonts-liberation` and
+`fonts-dejavu-core` in the image, or embed web fonts via `RenderingOptions.CustomCssUrl`.
+See [deployment.md](deployment.md).
+
+### 4.5 Archival Output
+
+Order confirmations are often retained for years. If this document needs to survive
+a compliance audit, render to PDF/A rather than plain PDF:
+
+```csharp
+pdf.SaveAsPdfA("order-archive.pdf", IronPdf.PdfAVersions.PdfA3b);
+```
+
+`SaveAsPdfUA` produces a tagged, screen-reader-accessible document, which is a
+procurement requirement in public-sector contracts.

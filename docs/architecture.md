@@ -10,7 +10,7 @@ This document details the software architecture, design principles, and separati
 flowchart TD
     subgraph Client["API Consumers / UI"]
         Web[HTTP Client / Browser]
-        Swagger[Swagger UI]
+        OpenApi[OpenAPI JSON / Demo Page]
     end
 
     subgraph API["Presentation Layer (OrderPdf.Api)"]
@@ -43,7 +43,7 @@ flowchart TD
     end
 
     Web --> Controller
-    Swagger --> Controller
+    OpenApi --> Controller
     Controller --> ServiceDef
     Controller --> RepoDef
     ServiceDef -.-> PdfService
@@ -79,7 +79,7 @@ flowchart TD
 
 ### 2.4 Presentation API Layer (`OrderPdf.Api`)
 - Exposes RESTful endpoints (`OrdersController`).
-- Handles HTTP requests, content negotiation, Swagger documentation, and streams PDF binary data as `application/pdf` with `Content-Disposition: attachment`.
+- Handles HTTP requests, content negotiation, the OpenAPI document at `/openapi/v1.json`, and streams PDF binary data as `application/pdf` with `Content-Disposition: attachment`.
 - Manages startup lifecycle, Dependency Injection, and IronPDF license initialization.
 
 ---
