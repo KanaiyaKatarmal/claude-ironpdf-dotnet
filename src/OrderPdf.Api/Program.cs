@@ -6,13 +6,18 @@ using OrderPdf.Infrastructure.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Initialize IronPDF Licensing
-var licenseKey = Environment.GetEnvironmentVariable("IRONPDF_LICENSE_KEY")
-                 ?? builder.Configuration["IronPdf:LicenseKey"];
+// The key comes from the environment only. It is never read from a committed
+// appsettings.json — see CONTRIBUTING.md.
+var licenseKey = Environment.GetEnvironmentVariable("IRONPDF_LICENSE_KEY");
 
 if (!string.IsNullOrWhiteSpace(licenseKey))
 {
     IronPdf.License.LicenseKey = licenseKey;
 }
+
+// Warm up Chromium at boot so the first user request does not pay the
+// initialisation cost, which can run to tens of seconds on a cold process.
+IronPdf.Installation.Initialize();
 
 // 2. Register Application & Infrastructure Services
 builder.Services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
@@ -26,14 +31,28 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// 4. Check & Log IronPDF License Status
+// 4. Report IronPDF license status at startup
 if (IronPdf.License.IsLicensed)
 {
     app.Logger.LogInformation("IronPDF is activated with a valid license key.");
 }
 else
 {
-    app.Logger.LogWarning("IronPDF is running in unlicensed / trial mode. Generated PDFs will include a watermark.");
+    // Unlicensed behaviour depends on version and trial state: either every page
+    // carries a trial watermark, or SaveAs throws "Production use: Requires a
+    // license" once the trial grace period expires. Rendering can succeed and
+    // saving still fail, so this is louder than a warning in Production.
+    var message = "IronPDF has no valid license. Output will be watermarked, and "
+                + "SaveAs will throw once the trial grace period expires. "
+                + "Set IRONPDF_LICENSE_KEY before starting the application.";
+
+    if (app.Environment.IsProduction())
+    {
+        app.Logger.LogCritical("{Message}", message);
+        throw new InvalidOperationException(message);
+    }
+
+    app.Logger.LogWarning("{Message}", message);
 }
 
 // 5. HTTP Request Pipeline

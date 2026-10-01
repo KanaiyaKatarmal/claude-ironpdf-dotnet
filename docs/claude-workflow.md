@@ -49,7 +49,7 @@ Professional Order Confirmation PDF
 
 ---
 
-## 2. 10-Step Development Walkthrough
+## 2. Development Walkthrough
 
 ```mermaid
 sequenceDiagram
@@ -108,3 +108,43 @@ Claude reviews the implementation against production best practices:
 - `CancellationToken` propagation
 - Explicit resource disposal via `using var pdf`
 - Zero hardcoded secrets / secure environment licensing (`IRONPDF_LICENSE_KEY`)
+
+### Step 9: Where the Skill Corrected Claude
+
+The useful part of a skill is not that it supplies API names. It is that it stops a
+plausible wrong answer before it reaches the codebase. One case from this build:
+
+**What Claude reached for first**
+
+```csharp
+// Shared renderer, constructed once and reused for every request.
+builder.Services.AddSingleton<ChromePdfRenderer>();
+```
+
+**What the skill said**
+
+> Performance: reuse one `ChromePdfRenderer` instance, prefer the async render
+> methods in servers, call `Installation.Initialize()` at boot […]
+
+Read alone, that endorses the singleton.
+
+**Why it was still wrong here**
+
+`RenderingOptions` is mutable instance state, and this service writes the company
+name and order number into the page header. Two concurrent requests sharing one
+renderer race on those properties, and the symptom is not an exception — it is one
+customer's order number printed on another customer's PDF.
+
+**What shipped**
+
+A renderer per request, with a comment at the call site recording why, so the next
+reader does not "optimise" it into the race. The genuine one-time cost —
+Chromium initialisation — is paid once at boot by `Installation.Initialize()`, which
+is where the skill's performance advice actually applies. If throughput ever demands
+renderer reuse, the answer is a pool with exclusive rental, not a shared instance.
+
+**The transferable lesson**
+
+A skill encodes what is true of the library. It cannot know what is true of your
+call site. Claude applying skill guidance correctly and still producing a bug is the
+normal case, not the surprising one, and it is the reason the review in Step 8 exists.

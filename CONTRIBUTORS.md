@@ -19,15 +19,19 @@ GitHub: https://github.com/KanaiyaKatarmal
 
 ### Iron Software
 
-Technical partner and sponsor of this project.
+Publisher of IronPDF and of the official IronPDF Agent Skill vendored in this
+repository.
 
-- IronPDF PDF generation library
-- Official IronPDF Skill
-- Technical collaboration
-- PDF workflow guidance and resources
+- Authors and maintains `.claude/skills/ironpdf/SKILL.md` and `llms.txt`
+  (provenance and refresh steps: `.claude/skills/ironpdf/SOURCE.md`)
+- Reviewed this project's IronPDF API usage and licensing — 2026-10-01, against the
+  pinned `IronPdf` 2026.9.2
+- Contributed the deployment guidance in `docs/deployment.md`
 
 Website: https://ironpdf.com/
 GitHub: https://github.com/iron-software
+
+This is a community project built with IronPDF, not an official Iron Software sample.
 
 ## Technologies
 
@@ -41,10 +45,6 @@ This project demonstrates a production-ready PDF workflow using:
 - IronPDF
 - HTML/CSS
 - Chromium-based PDF rendering
-
-## Acknowledgements
-
-Special thanks to **Iron Software** for supporting this project and for providing IronPDF and the official IronPDF Skill used in the development workflow.
 
 ---
 

@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    # windows-latest matches the IronPdf (Windows) package this repo references.
+    # Switch to ubuntu-latest only after adding the IronPdf.Linux conditional
+    # described in docs/deployment.md.
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          # The IronPdf Chromium natives are ~100 MB. Caching them is the
+          # difference between a 30-second and a 4-minute run.
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        # The suite renders real PDFs through Chromium. Without a license the
+        # output is watermarked but the assertions still pass, so CI stays green
+        # on forks that cannot read the secret.
+        env:
+          IRONPDF_LICENSE_KEY: ${{ secrets.IRONPDF_LICENSE_KEY }}
+        run: dotnet test --no-build --configuration Release --verbosity normal
+
+      - name: Upload generated PDFs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sample-pdfs
+          path: output/*.pdf
+          if-no-files-found: warn
+
+  skill-freshness:
+    # The skill is vendored from ironpdf.com and goes stale silently.
+    # This job reports drift. It does not fail the build.
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare vendored skill against upstream
+        run: |
+          curl -sS -o /tmp/skill.md https://ironpdf.com/skill.md
+          curl -sS -o /tmp/llms.txt https://ironpdf.com/llms.txt
+          for f in SKILL.md:/tmp/skill.md llms.txt:/tmp/llms.txt; do
+            name="${f%%:*}"; live="${f##*:}"
+            # Normalise line endings so CRLF does not masquerade as content drift.
+            tr -d '\r' < ".claude/skills/ironpdf/$name" > /tmp/vendored
+            tr -d '\r' < "$live" > /tmp/upstream
+            n=$(diff /tmp/vendored /tmp/upstream | grep -c '^[<>]' || true)
+            echo "$name: $n differing lines vs upstream"
+          done
+          echo "Refresh instructions: .claude/skills/ironpdf/SOURCE.md"

@@ -66,7 +66,7 @@ ClaudeIronPdfDemo/
 │   ├── OrderPdf.Domain/                 # Core entities (Order, OrderItem, Customer, Company)
 │   ├── OrderPdf.Application/            # Interfaces, ViewModels & TemplateRenderer
 │   ├── OrderPdf.Infrastructure/         # IronPdf OrderPdfService & InMemoryOrderRepository
-│   └── OrderPdf.Api/                    # ASP.NET Core Web API Controllers & Swagger
+│   └── OrderPdf.Api/                    # ASP.NET Core Web API Controllers & OpenAPI
 │
 ├── samples/                             # JSON test datasets
 │   ├── simple-order.json                # Sample 1: Standard 1-page order
@@ -76,13 +76,15 @@ ClaudeIronPdfDemo/
 ├── .claude/
 │   └── skills/
 │       └── ironpdf/
-│           ├── SKILL.md                 # Official IronPDF Skill
-│           └── llms.txt                 # Official IronPDF LLMs Index
+│           ├── SKILL.md                 # Official IronPDF Skill (vendored verbatim)
+│           ├── llms.txt                 # Official IronPDF LLMs Index (vendored verbatim)
+│           └── SOURCE.md                # Provenance: source, fetch date, refresh steps
 │
 ├── docs/                                # Detailed technical guides
 │   ├── architecture.md
 │   ├── claude-workflow.md
-│   └── pdf-workflow.md
+│   ├── pdf-workflow.md
+│   └── deployment.md
 │
 ├── output/                              # Generated PDF artifacts
 │   ├── sample-order-confirmation.pdf
@@ -92,7 +94,8 @@ ClaudeIronPdfDemo/
 ├── tests/
 │   └── OrderPdf.Tests/                  # Unit & integration tests
 │
-├── Claude.md                            # Claude prompt playbook
+├── CLAUDE.md                            # Project memory for Claude Code
+├── CONTRIBUTING.md
 ├── README.md
 └── LICENSE
 ```
@@ -104,7 +107,7 @@ ClaudeIronPdfDemo/
 - **Framework**: .NET 10 (`net10.0`)
 - **Language**: C# 13/14 (Nullable Reference Types, File-scoped Namespaces, Record structs)
 - **PDF Engine**: IronPDF (`IronPdf` NuGet package)
-- **Web API**: ASP.NET Core Web API with Controllers & Swagger/OpenAPI
+- **Web API**: ASP.NET Core Web API with Controllers & OpenAPI (`/openapi/v1.json`)
 - **Testing**: xUnit, FluentAssertions
 
 ---
@@ -128,7 +131,7 @@ dotnet restore
 dotnet build
 ```
 
-### 2. Configure IronPDF License (Optional for Trial)
+### 2. Configure IronPDF License
 Set the license key via environment variable:
 ```bash
 # Windows PowerShell
@@ -137,16 +140,16 @@ $env:IRONPDF_LICENSE_KEY="YOUR_KEY_HERE"
 # Linux / macOS
 export IRONPDF_LICENSE_KEY="YOUR_KEY_HERE"
 ```
-*(If unlicensed, IronPDF generates the document with a trial watermark).*
+*(Without a key, IronPDF runs in trial mode: pages carry a trial watermark, and once the trial grace period expires `SaveAs` throws `Production use: Requires a license`. Rendering can succeed and saving still fail. The app logs its license state at startup.)*
 
 ### 3. Run the Web API
 ```bash
 dotnet run --project src/OrderPdf.Api
 ```
 
-Open Swagger UI in your browser:
+Open the demo page in your browser:
 ```text
-https://localhost:5001/
+https://localhost:7000/
 ```
 
 ---
@@ -160,7 +163,7 @@ GET /api/orders/{orderId}/pdf
 
 Example request:
 ```bash
-curl -O -J https://localhost:5001/api/orders/ord-simple-001/pdf
+curl -O -J https://localhost:7000/api/orders/ord-simple-001/pdf
 ```
 
 ### Response
@@ -191,8 +194,11 @@ curl -O -J https://localhost:5001/api/orders/ord-simple-001/pdf
 
 - **Security & XSS Prevention**: All text fields interpolated into the HTML template are sanitized using `WebUtility.HtmlEncode()`.
 - **Resource Management**: `PdfDocument` is wrapped in `using` blocks to prevent unmanaged memory leaks.
-- **Asynchronous Execution**: Uses non-blocking `RenderHtmlAsPdfAsync()` with `CancellationToken` support.
+- **Asynchronous Execution**: Uses non-blocking `RenderHtmlAsPdfAsync()`, with the request's `CancellationToken` observed before rendering begins.
 - **Financial Precision**: All currency values use `decimal` precision to prevent floating-point rounding errors.
+- **Deployment**: platform packages, Docker, fonts and hosting notes are in [docs/deployment.md](docs/deployment.md). The default `IronPdf` package reference is Windows-only.
+- **Renderer Lifecycle**: a `ChromePdfRenderer` is constructed per request by design — its `RenderingOptions` carry per-order header and footer values, so a shared instance would race across concurrent requests.
+- **Startup Warm-Up**: `IronPdf.Installation.Initialize()` runs at boot so the first user request does not pay Chromium's initialisation cost.
 
 ---
 
@@ -214,9 +220,13 @@ Tests verify:
 
 ## Contributors
 
-This project is created and maintained by **Kanaiya Katarmal** in collaboration with **Iron Software**.
+Created and maintained by **Kanaiya Katarmal**.
 
-Special thanks to **Iron Software** for supporting this project and providing IronPDF and the official IronPDF Skill used in the development workflow.
+IronPDF and the official IronPDF Skill vendored in `.claude/skills/ironpdf/` are
+published by **Iron Software**, who also reviewed this project's IronPDF API usage,
+licensing and deployment guidance.
+
+This is a community project built with IronPDF, not an official Iron Software sample.
 
 See [CONTRIBUTORS.md](CONTRIBUTORS.md) for contributor details.
 
