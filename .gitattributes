@@ -1,0 +1,20 @@
+* text=auto
+
+# Vendored verbatim from ironpdf.com. Keep LF so `git diff` against a fresh
+# download shows real content drift instead of line-ending noise.
+# See .claude/skills/ironpdf/SOURCE.md
+.claude/skills/**/*.md  text eol=lf
+.claude/skills/**/*.txt text eol=lf
+
+*.cs      text diff=csharp
+*.csproj  text
+*.slnx    text
+*.json    text
+*.md      text
+*.yml     text eol=lf
+*.sh      text eol=lf
+*.ps1     text eol=crlf
+
+*.pdf  binary
+*.png  binary
+*.jpg  binary
