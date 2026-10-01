@@ -30,6 +30,13 @@ public sealed class OrderPdfService : IOrderPdfService
         var viewModel = OrderPdfViewModel.FromEntity(order);
         var htmlContent = await _templateRenderer.RenderOrderConfirmationHtmlAsync(viewModel, cancellationToken);
 
+        // A renderer is constructed per request on purpose. RenderingOptions is
+        // mutable instance state and the header and footer below carry per-order
+        // values, so a shared singleton would race and print one customer's order
+        // number onto another customer's PDF. The one-time Chromium startup cost is
+        // paid at boot by Installation.Initialize() in Program.cs. If throughput
+        // ever demands reuse, pool the renderers and rent one exclusively per
+        // render — do not share a single instance.
         var renderer = new ChromePdfRenderer();
 
         // Print & Layout Settings
